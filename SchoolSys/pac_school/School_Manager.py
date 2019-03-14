@@ -23,9 +23,8 @@ class School_Manager(object):
 
     '查找是否已经存在相同学校代码的学校'
     def is_exist(self, code):
-        result = True
         if code != '':
-            if len(self.dbManager.get_all_school()) > 0:
+            if len(self.dbManager.get_school_by_code(code)) > 0:
                 result = True
             else:
                 result = False

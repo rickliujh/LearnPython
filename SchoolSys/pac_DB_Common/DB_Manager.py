@@ -33,10 +33,10 @@ class School_DB(DB_Manager):
 
     '向数据库添加一所学校'
     def add_school(self, objSchool):
-        dbSchool = super().school(school_code=objSchool.code,
+        dbSchool = self.school(school_code=objSchool.code,
                                school_name=objSchool.name, school_addr=objSchool.address)
         self.get_session().add(dbSchool)
-        self.get_session().commit()().get_session().commit()
+        self.get_session().commit()
 
     '从数据库获取全部学校信息'
     def get_all_school(self):
@@ -68,7 +68,7 @@ class School_DB(DB_Manager):
     '根据学校编码，从数据库删除指定的学校信息'
     def delete_school(self, code):
         self.get_session().query(self.school).filter(self.school.school_code == code).delete()
-        self().get_session().commit()
+        self.get_session().commit()
 
     def edit_school(self, obj):
         attrs = {
