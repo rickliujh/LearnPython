@@ -7,6 +7,7 @@ from pac_class import Class
 from pac_teacher import Teacher
 from pac_student import Student
 from pac_subject import Subject
+from database import Settings
 
 
 class DB_Manager:
@@ -14,9 +15,14 @@ class DB_Manager:
                  'classes', 'student', 'teacher', 'subject')
 
     def __init__(self):
-
-        self.__engine = create_engine("mysql+pymysql://root:123456@localhost/edusys",
-                                      encoding="utf-8", echo=False, max_overflow=5)
+        DbConnection = "mysql+pymysql://{0}:{1}@{2}/{3}".format(
+            Settings.DATABASE['username'],
+            Settings.DATABASE['password'],
+            Settings.DATABASE['host'],
+            Settings.DATABASE['database'],
+        )
+        self.__engine = create_engine(
+            DbConnection, encoding="utf-8", echo=False, max_overflow=5)
         Base = automap_base()
         Base.prepare(self.__engine, reflect=True)
         Base.classes.keys()
@@ -275,8 +281,6 @@ class Student_DB(DB_Manager):
         self.get_session().query(self.student).filter(
             self.student.student_code == obj.code).update(attrs)
         self.get_session().commit()
-
-
 
 
 class Subject_DB(DB_Manager):
