@@ -65,16 +65,16 @@ class School:
         print("**********************************************************************************")
 
     '查找是否已经存在相同学校代码的班级'
-    def is_exist(self, code):
-        result = True
-        if code != '':
-            if self.__class_data.get(code) != None:
-                result = True
-            else:
-                result = False
-        else:
-            result = False
-        return result
+    # def is_exist(self, code):
+    #     result = True
+    #     if code != '':
+    #         if self.__class_data.get(code) != None:
+    #             result = True
+    #         else:
+    #             result = False
+    #     else:
+    #         result = False
+    #     return result
 
     '根据指定的班级代码查找班级信息'
     def search_class(self, code):
