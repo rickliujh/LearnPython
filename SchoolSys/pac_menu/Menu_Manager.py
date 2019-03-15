@@ -1,16 +1,24 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-from pac_menu import Enum_Meun, Enum_School_Menu, Enum_Class_Menu
+from pac_menu import Enum_Meun, Enum_School_Menu, Enum_Class_Menu, Enum_Student_Menu, Enum_Subject_Menu, Enum_Teacher_Menu
 from pac_school import School, School_Manager
 from pac_class import Class, Class_Manager
+from pac_student import Student, Student_Manager
+from pac_teacher import Teacher, Teacher_Manager
+from pac_subject import Subject, Subject_Manager
 class Menu:
     __slots__ = ('summary_menu', 'school_management_menu',
                  'class_management_menu', 'student_management_menu',
                  'subject_management_menu', 'teacher_management_menu',
-                 '__objSchoolData')
+                 '__objSchoolData','__objTeacherData','__objClassData',
+                 '__objStudentData','__objSubjectData')
 
     def __init__(self):
         self.__objSchoolData = School_Manager.School_Manager()
+        self.__objTeacherData = Teacher_Manager.Teacher_Manager()
+        self.__objClassData = Class_Manager.Class_Manager()
+        self.__objStudentData = Student_Manager.Student_Manager()
+        self.__objSubjectData = Subject_Manager.Subject_Manager()
 
     def show_summary_menu(self):
         '显示总的系统菜单'
@@ -59,11 +67,11 @@ class Menu:
         elif summary_menu == Enum_Meun.Enum_Summary_Menu.class_management:
             self.show_class_menu()
         elif summary_menu == Enum_Meun.Enum_Summary_Menu.student_management:
-            print("select student")
+            self.show_student_menu()
         elif summary_menu == Enum_Meun.Enum_Summary_Menu.subject_management:
-            print("select subject")
+            self.show_subject_menu()
         elif summary_menu == Enum_Meun.Enum_Summary_Menu.teacher_management:
-            print("select teacher")
+            self.show_teacher_menu()
 
     def show_school_menu(self):
         '显示总的系统菜单'
@@ -89,7 +97,7 @@ class Menu:
 
         temp_menu = eval(user_input)
         if int(temp_menu) <= 0 or int(temp_menu) > 7:
-            print("请输入1〜7之间的书记进行菜单的选择")
+            print("请输入1〜7之间的数字进行菜单的选择")
             self.select_school_menu()
             return
         if temp_menu == Enum_School_Menu.School_Menu.add_school.value:
@@ -285,6 +293,23 @@ class Menu:
             obj_school.add_class(obj_class)
             '更新添加了班级信息的学校数据到学校列表数据库'
             self.__objSchoolData.edit_school(school_code, obj_school)
+        self.__objSchoolData.show_all_school()
+        school_code = input("请输入班级所属学校代码：")
+        class_code = input("请输入班级代码：")
+        name = input("请输入班级名称：")
+        address = input("请输入班级地址：")
+        '初始化一个班级对象，用于接收用户的输入'
+        obj_class = Class.Class()
+        obj_class.name = name
+        obj_class.code = class_code
+        obj_class.school_code = school_code
+        obj_class.address = address
+        '根据用户输入的学校代码，获取对应的学校实例'
+        obj_school = self.__objSchoolData.search_school(school_code)
+        '把班级对象实例添加到对应的学校实例数据库'
+        obj_school.add_class(obj_class)
+        '更新添加了班级信息的学校数据到学校列表数据库'
+        self.__objSchoolData.edit_school(school_code, obj_school)
 
     def edit_class(self):
         if self.__objSchoolData.is_empty() == True:
@@ -347,14 +372,357 @@ class Menu:
 
 
 
+#TODO 学生
+
+    def show_student_menu(self):
+        '显示总的系统菜单'
+        print("*************************************")
+        print("*     欢迎使用进入校园综合管理菜单       ")
+        print("*     1.添加学生信息                  ")
+        print("*     2.编辑学生信息                  ")
+        print("*     3.查看学生信息                  ")
+        print("*     4.删除学生信息                  ")
+        print("*     5.退回上一层菜单                 ")
+        print("*************************************")
+        self.select_student_menu()
+
+    def select_student_menu(self):
+
+        user_input = input('请输入菜单序号:')
+        if isinstance(eval(user_input), int) == False:
+            print("请重新输入数字进行菜单的选择!")
+            self.select_student_menu()
+            return
+
+        temp_menu = eval(user_input)
+        if int(temp_menu) <= 0 or int(temp_menu) > 5:
+            print("请输入1〜5之间的书记进行菜单的选择")
+            self.select_student_menu()
+            return
+        if temp_menu == Enum_Student_Menu.Student_Menu.add_student.value:
+            self.student_management_menu = Enum_Student_Menu.Student_Menu.add_student
+            self.add_student()
+            self.show_student_menu()
+        elif temp_menu == Enum_Student_Menu.Student_Menu.edit_student.value:
+            self.student_management_menu = Enum_Student_Menu.Student_Menu.edit_student
+            self.edit_student()
+            self.show_student_menu()
+        elif temp_menu == Enum_Student_Menu.Student_Menu.show_student.value:
+            self.student_management_menu = Enum_Student_Menu.Student_Menu.show_student
+            self.show_student()
+            self.show_student_menu()
+        elif temp_menu == Enum_Student_Menu.Student_Menu.delete_student.value:
+            self.student_management_menu = Enum_Student_Menu.Student_Menu.return_back.delete_student
+            self.delete_student()
+            self.show_student_menu()
+        elif temp_menu == Enum_Student_Menu.Student_Menu.return_back.value:
+            self.student_management_menu = Enum_Student_Menu.Student_Menu.return_back
+            self.show_summary_menu()
+            self.select_summary_menu()
+            summary_menu = self.get_summary_menu()
+            '根据用户的选择，显示对应的子菜单'
+            self.show_sbu_menu(summary_menu)
+
+    '添加学生信息'
+    def add_student(self):
+        print("********************************")
+        print("欢迎进入学生录入界面")
+        code = input("请输入学生代码:")
+        name = input("请输入学生名称:")
+        sex = input("请输入学生性别:")
+        age = input("请输入学生年龄:")
+        class_code = input("请输入学生班级代码:")
+        school_code = input("请输入学生学校代码:")
+
+        save = input("学生信息录入完毕，是否存入内存数据库？y/n")
+        if save.upper() == "Y":
+            objStudent = Student.Student()
+            objStudent.code = code
+            objStudent.name = name
+            objStudent.sex = sex
+            objStudent.age = age
+            objStudent.class_code = class_code
+            objStudent.school_code = school_code
+            if self.__objStudentData.is_exist(code) == True:
+                print("您输入的学生代码已经存在，请重新输入！")
+                self.add_student()
+            else:
+                self.__objStudentData.add_student(objStudent)
+                print("恭喜您，学生信息已保存到内存数据库！")
+                print("您输入的学生信息如下：")
+                print("学生代码：" + code)
+                print("学生名称：" + name)
+                print("学生性别：" + sex)
+                print("学生年龄：" + age)
+                print("学生班级代码：" + class_code)
+                print("学生学校代码：" + school_code)
+
+
+        self.show_student_menu()
+
+    '编辑学生信息'
+    def edit_student(self):
+        code = input("请输入你要编辑的学生代码:")
+        if self.__objStudentData.is_exist(code) == False:
+            print("您输入的学生不存在，请从新输入！")
+            self.edit_student()
+        else:
+            print("您即将为学生代码为：" + code + "的学生进行信息的编辑")
+            name = input("请输入您要更改的学生名称：")
+            sex = input("请输入学生性别:")
+            age = input("请输入学生年龄:")
+            class_code = input("请输入学生班级代码:")
+            obj = self.__objStudentData.get_student_by_code(code)
+            obj.name = name
+            obj.sex = sex
+            obj.age = age
+            obj.class_code = class_code
+            self.__objStudentData.edit_student(code, obj)
+            print("学生信息更新完毕！")
+
+    '查看学生信息'
+    def show_student(self):
+        int_menu = input("请输入菜单查看学生信息：1表示查看全部学生的信息；2表示根据学生代码查看指定学生信息:")
+        if int_menu == '1':
+            self.__objStudentData.show_all_student()
+        elif int_menu == '2':
+            student_code = input("请输入学生代码：")
+            self.__objStudentData.show_student(student_code)
+
+
+    def delete_student(self):
+        code = input("请输入您要删除的学生代码：")
+        if self.__objStudentData.search_student(code) == False:
+            print("您输入的学生代码不存在！")
+        else:
+            self.__objStudentData.delete_student(code)
+        self.select_student_menu()
+
+#TODO 教师
+
+    def show_teacher_menu(self):
+        '显示总的系统菜单'
+        print("*************************************")
+        print("*     欢迎使用进入校园综合管理菜单       ")
+        print("*     1.添加教师信息                  ")
+        print("*     2.编辑教师信息                  ")
+        print("*     3.查看教师信息                  ")
+        print("*     4.删除教师信息                  ")
+        print("*     5.退回上一层菜单                 ")
+        print("*************************************")
+        self.select_teacher_menu()
+
+    def select_teacher_menu(self):
+
+        user_input = input('请输入菜单序号:')
+        if isinstance(eval(user_input), int) == False:
+            print("请重新输入数字进行菜单的选择!")
+            self.select_teacher_menu()
+            return
+
+        temp_menu = eval(user_input)
+        if int(temp_menu) <= 0 or int(temp_menu) > 5:
+            print("请输入1〜5之间的书记进行菜单的选择")
+            self.select_teacher_menu()
+            return
+        if temp_menu == Enum_Teacher_Menu.Teacher_Menu.add_teacher.value:
+            self.teacher_management_menu = Enum_Teacher_Menu.Teacher_Menu.add_teacher
+            self.add_teacher()
+            self.show_teacher_menu()
+        elif temp_menu == Enum_Teacher_Menu.Teacher_Menu.edit_teacher.value:
+            self.teacher_management_menu = Enum_Teacher_Menu.Teacher_Menu.edit_teacher
+            self.edit_teacher()
+            self.show_teacher_menu()
+        elif temp_menu == Enum_Teacher_Menu.Teacher_Menu.show_teacher.value:
+            self.teacher_management_menu = Enum_Teacher_Menu.Teacher_Menu.show_teacher
+            self.show_teacher()
+            self.show_teacher_menu()
+        elif temp_menu == Enum_Teacher_Menu.Teacher_Menu.delete_teacher.value:
+            self.teacher_management_menu = Enum_Teacher_Menu.Teacher_Menu.return_back.delete_teacher
+            self.delete_teacher()
+            self.show_teacher_menu()
+        elif temp_menu == Enum_Teacher_Menu.Teacher_Menu.return_back.value:
+            self.teacher_management_menu = Enum_Teacher_Menu.Teacher_Menu.return_back
+            self.show_summary_menu()
+            self.select_summary_menu()
+            summary_menu = self.get_summary_menu()
+            '根据用户的选择，显示对应的子菜单'
+            self.show_sbu_menu(summary_menu)
+
+
+    '添加教师信息'
+    def add_teacher(self):
+        print("********************************")
+        print("欢迎进入教师录入界面")
+        code = input("请输入教师代码:")
+        name = input("请输入教师名称:")
+        school_code = input("请输入教师所在学校代码:")
+        
+
+        save = input("教师信息录入完毕，是否存入内存数据库？y/n")
+        if save.upper() == "Y":
+            objTeacher = Teacher.Teacher()
+            objTeacher.code = code
+            objTeacher.name = name
+            objTeacher.school_code = school_code
+            if self.__objTeacherData.is_exist(code) == True:
+                print("您输入的教师代码已经存在，请重新输入！")
+                self.add_teacher()
+            else:
+                self.__objTeacherData.add_teacher(objTeacher)
+                print("恭喜您，教师信息已保存到内存数据库！")
+                print("您输入的教师信息如下：")
+                print("教师代码：" + code)
+                print("教师名称：" + name)
+                print("教师所在学校代码：" + school_code)
+
+
+        self.show_teacher_menu()
+
+    '编辑教师信息'
+    def edit_teacher(self):
+        code = input("请输入你要编辑的教师代码:")
+        if self.__objTeacherData.is_exist(code) == False:
+            print("您输入的教师不存在，请从新输入！")
+            self.edit_teacher()
+        else:
+            print("您即将为教师代码为：" + code + "的教师进行信息的编辑")
+            name = input("请输入您要更改的教师名称：")
+            school_code = input("请输入教师所在学校代码:")
+            obj = self.__objTeacherData.get_teacher_by_code(code)
+            obj.name = name
+            obj.school_code = school_code
+            self.__objTeacherData.edit_teacher(code, obj)
+            print("教师信息更新完毕！")
+
+    '查看教师信息'
+    def show_teacher(self):
+        int_menu = input("请输入菜单查看教师信息：1表示查看全部教师的信息；2表示根据教师代码查看指定教师信息:")
+        if int_menu == '1':
+            self.__objTeacherData.show_all_teacher()
+        elif int_menu == '2':
+            teacher_code = input("请输入教师代码：")
+            self.__objTeacherData.show_teacher(teacher_code)
+
+
+    def delete_teacher(self):
+        code = input("请输入您要删除的教师代码：")
+        if self.__objTeacherData.search_teacher(code) == False:
+            print("您输入的教师代码不存在！")
+        else:
+            self.__objTeacherData.delete_teacher(code)
+        self.select_teacher_menu()
+
+
+#TODO 课程
+
+    def show_subject_menu(self):
+        '显示总的系统菜单'
+        print("*************************************")
+        print("*     欢迎使用进入校园综合管理菜单       ")
+        print("*     1.添加课程信息                  ")
+        print("*     2.编辑课程信息                  ")
+        print("*     3.查看课程信息                  ")
+        print("*     4.删除课程信息                  ")
+        print("*     5.退回上一层菜单                 ")
+        print("*************************************")
+        self.select_subject_menu()
 
 
 
+    def select_subject_menu(self):
+
+        user_input = input('请输入菜单序号:')
+        if isinstance(eval(user_input), int) == False:
+            print("请重新输入数字进行菜单的选择!")
+            self.select_subject_menu()
+            return
+
+        temp_menu = eval(user_input)
+        if int(temp_menu) <= 0 or int(temp_menu) > 5:
+            print("请输入1〜5之间的书记进行菜单的选择")
+            self.select_subject_menu()
+            return
+        if temp_menu == Enum_Subject_Menu.Subject_Menu.add_subject.value:
+            self.subject_management_menu = Enum_Subject_Menu.Subject_Menu.add_subject
+            self.add_subject()
+            self.show_subject_menu()
+        elif temp_menu == Enum_Subject_Menu.Subject_Menu.edit_subject.value:
+            self.subject_management_menu = Enum_Subject_Menu.Subject_Menu.edit_subject
+            self.edit_subject()
+            self.show_subject_menu()
+        elif temp_menu == Enum_Subject_Menu.Subject_Menu.show_subject.value:
+            self.subject_management_menu = Enum_Subject_Menu.Subject_Menu.show_subject
+            self.show_subject()
+            self.show_subject_menu()
+        elif temp_menu == Enum_Subject_Menu.Subject_Menu.delete_subject.value:
+            self.subject_management_menu = Enum_Subject_Menu.Subject_Menu.return_back.delete_subject
+            self.delete_subject()
+            self.show_subject_menu()
+        elif temp_menu == Enum_Subject_Menu.Subject_Menu.return_back.value:
+            self.subject_management_menu = Enum_Subject_Menu.Subject_Menu.return_back
+            self.show_summary_menu()
+            self.select_summary_menu()
+            summary_menu = self.get_summary_menu()
+            '根据用户的选择，显示对应的子菜单'
+            self.show_sbu_menu(summary_menu)
+
+    '添加课程信息'
+    def add_subject(self):
+        print("********************************")
+        print("欢迎进入课程录入界面")
+        code = input("请输入课程代码:")
+        name = input("请输入课程名称:")
+
+        save = input("课程信息录入完毕，是否存入内存数据库？y/n")
+        if save.upper() == "Y":
+            objSubject = Subject.Subject()
+            objSubject.code = code
+            objSubject.name = name
+            if self.__objSubjectData.is_exist(code) == True:
+                print("您输入的课程代码已经存在，请重新输入！")
+                self.add_subject()
+            else:
+                self.__objSubjectData.add_subject(objSubject)
+                print("恭喜您，课程信息已保存到内存数据库！")
+                print("您输入的课程信息如下：")
+                print("课程代码：" + code)
+                print("课程名称：" + name)
 
 
+        self.show_subject_menu()
+
+    '编辑课程信息'
+    def edit_subject(self):
+        code = input("请输入你要编辑的课程代码:")
+        if self.__objSubjectData.is_exist(code) == False:
+            print("您输入的课程不存在，请从新输入！")
+            self.edit_subject()
+        else:
+            print("您即将为课程代码为：" + code + "的课程进行信息的编辑")
+            name = input("请输入您要更改的课程名称：")
+            obj = self.__objSubjectData.get_subject_by_code(code)
+            obj.name = name
+            self.__objSubjectData.edit_subject(code, obj)
+            print("课程信息更新完毕！")
+
+    '查看课程信息'
+    def show_subject(self):
+        int_menu = input("请输入菜单查看课程信息：1表示查看全部课程的信息；2表示根据课程代码查看指定课程信息:")
+        if int_menu == '1':
+            self.__objSubjectData.show_all_subject()
+        elif int_menu == '2':
+            subject_code = input("请输入课程代码：")
+            self.__objSubjectData.show_subject(subject_code)
 
 
-
+    def delete_subject(self):
+        code = input("请输入您要删除的课程代码：")
+        if self.__objSubjectData.search_subject(code) == False:
+            print("您输入的课程代码不存在！")
+        else:
+            self.__objSubjectData.delete_subject(code)
+        self.select_subject_menu()
 
 
 
