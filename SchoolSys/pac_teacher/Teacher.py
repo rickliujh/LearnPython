@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 class Teacher:
     __slots__ = ('code', 'name','school_code', '__teacher_data')
 

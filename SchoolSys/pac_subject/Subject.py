@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 class Subject:
     __slots__ = ('code', 'name', '__subject_data')
 

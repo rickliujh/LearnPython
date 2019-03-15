@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from pac_class import Class
 class Class_Data(object):
     def __init__(self):
