@@ -233,30 +233,17 @@ class Student_DB(DB_Manager):
     '从数据库获取全部学生信息'
 
     def get_all_student(self):
-        student_result = self\
-            .get_session()\
-            .query(self.student, self.classes, self.school)\
-            .outerjoin(self.classes, self.student.class_code == self.classes.class_code)\
-            .outerjoin(self.school, self.student.school_code == self.school.school_code)\
-            .all()
-        # student_result = self\
-        #     .get_session()\
-        #     .query(student, classes, school)\
-        #     .filter(student.class_code == classes.class_code)\
-        #     .filter(student.school_code == school.school_code)\
-        #     .all()
+        student_result = self.get_session().query(self.student).join(self.classes.id).join(self.school.id).all()
         _dicStudent = {}
         for obj in student_result:
-            objStudent = {}
-            objStudent['code'] = obj.student.student_code
-            objStudent['name'] = obj.student.student_name
-            objStudent['school_code'] = obj.student.school_code
-            objStudent['school_name'] = obj.school.school_name
-            objStudent['class_code'] = obj.student.class_code
-            objStudent['class_name'] = obj.classes.class_name
-            objStudent['age'] = obj.student.student_age
-            objStudent['sex'] = obj.student.student_sex
-            _dicStudent.update({obj.student.student_code: objStudent})
+            objStudent = Student.Student()
+            objStudent.code = obj.student_code
+            objStudent.name = obj.student_name
+            objStudent.school_code = obj.school_code
+            objStudent.class_code = obj.class_code
+            objStudent.age = obj.student_age
+            objStudent.sex = obj.student_sex
+            _dicStudent.update({obj.student_code: objStudent})
         return _dicStudent
 
     '根据学生编码，从数据库获取指定的学生信息'
