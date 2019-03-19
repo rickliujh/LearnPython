@@ -28,5 +28,5 @@ python chatroom\server\testServer.py
 
 **client**
 ```
-python chatroom\client\client.py
+python chatroom\client\clientGUI.py
 ```
