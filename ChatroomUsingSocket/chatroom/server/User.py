@@ -31,10 +31,18 @@ class User(object):
             return data
 
     def sendMessage(self, message):
-        self.__sock.send(str(message).encode('utf-8'))
+        try:
+            self.__sock.send(str(message).encode('utf-8'))
+        finally:
+            return
 
     def getSockPeerName(self):
-        return self.__sock.getpeername()
+        ip, port = None, None
+        try:
+            ip, port = self.__sock.getpeername()
+        finally:
+            return (ip, port)
+        return
 
     def closeSock(self):
         self.__sock.shutdown(2)
