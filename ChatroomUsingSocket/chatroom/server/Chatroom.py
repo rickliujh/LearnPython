@@ -34,7 +34,10 @@ class Chatroom(object):
         s.send(None)
         while True:
             user = yield 
+            print('get user: '+user.getUserName()+" | %s:%s" % user.getSockPeerName())
             data = user.getMessage()
+            if not data:
+                continue
             s.send((user, data))
         s.close()
             
@@ -43,6 +46,7 @@ class Chatroom(object):
         while True:
             currUser, data = yield 
             for user in self.__userList:
+                print('send user: '+user.getUserName()+" | %s:%s" % user.getSockPeerName())
                 if user is currUser:
                     continue
                     # user.sendMessage('')
@@ -52,6 +56,7 @@ class Chatroom(object):
     def eachUser(self, g):
         g.send(None)
         for user in self.__userList:
+            print('each user: '+user.getUserName()+" | %s:%s" % user.getSockPeerName())
             g.send(user)
         g.close()
             
