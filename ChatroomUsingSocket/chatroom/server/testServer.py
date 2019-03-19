@@ -24,7 +24,7 @@ print('Waiting for connection...')
 #             break
 #         sock.send(('你好,你刚刚给我说了： %s!' % data.decode('utf-8')).encode('utf-8'))
 #     sock.close()
-nameList = ['小明', '小红']
+nameList = ['小明', '小红', '小刚']
 count = 0
 chatroom = Chatroom.Chatroom()
 t = Thread(target=chatroom.toChat)     # 在新线程中创建一个聊天室:
@@ -34,4 +34,5 @@ while True:
     sock, addr = s.accept()
     user = User.User(nameList[count],sock) #实例化一个用户类
     chatroom.addUser(user)
+    count += 1
     

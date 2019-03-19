@@ -9,6 +9,7 @@ class User(object):
         self.__userName = userName
         self.__userHash = hash(userName + str(time.time()))
         self.__sock = sock
+        self.__sock.settimeout(0.01)
 
     def getUserName(self):
         return self.__userName
@@ -23,9 +24,13 @@ class User(object):
         return self.__sock
 
     def getMessage(self):
-        return self.__sock.recv(1024).decode('utf-8')
+        data = None
+        try:
+            data = self.getUserName() + ": " + self.__sock.recv(1024).decode('utf-8')
+        finally:
+            return data
 
-    def sendMessage(self,message):
+    def sendMessage(self, message):
         self.__sock.send(str(message).encode('utf-8'))
 
     def getSockPeerName(self):
