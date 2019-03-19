@@ -64,7 +64,7 @@ class Chatroom(object):
         g.close()
 
     def exitChatroom(self, user):
+        print("user: "+user.getUserName()+" | %s:%s" % user.getSockPeerName()+ " disconnect")
         user.closeSock()
         self.__userList.remove(user)
         self.__userCount -= 1
-            
