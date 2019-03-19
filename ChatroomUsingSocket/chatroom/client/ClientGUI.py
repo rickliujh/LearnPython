@@ -65,8 +65,21 @@ class ChatroomClient(Frame):
                 continue
             self.writeLine(data)
 
+    def closeWindow(self):
+        try:
+            self.sock.sendall('$exit'.encode('utf-8'))
+        finally:
+            return
+        
+
+def closeWindow():
+    app.closeWindow()
+    app.master.destroy()
 
 app = ChatroomClient()
 app.master.title("Chatroom")
 app.master.geometry('500x420')
+app.master.protocol('WM_DELETE_WINDOW', closeWindow)
 app.mainloop()
+
+
