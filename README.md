@@ -15,7 +15,7 @@ python main.py
 
 ## 2.Chatroom
 
-https://github.com/R1chMillions/LearnPython/tree/dev-Chatroom/ChatroomUsingSocket/chatroom
+https://github.com/R1chMillions/LearnPython/tree/master/ChatroomUsingSocket/chatroom
 
 ### UML
 
