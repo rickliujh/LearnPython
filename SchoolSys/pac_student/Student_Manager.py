@@ -57,9 +57,9 @@ class Student_Manager(object):
         if len(self.__data) > 0:
             print("**********************************************************************")
             for key in self.__data:
-                obj = self.__data[key]
-                print("学生代码:{0}    |学生名称:{1}    |学生年龄:{2}    |学生性别:{3}    |班级代码:{4}    |学校代码:{5}"
-                .format(obj.code, obj.name, obj.age, obj.sex, obj.class_code, obj.school_code))
+                dic = self.__data[key]
+                print("学生代码:{0}    |学生名称:{1}    |学生年龄:{2}    |学生性别:{3}    |班级代码:{4}     |班级名称:{5}    |学校代码:{6}   |学校名称:{7}"
+                .format(dic['code'], dic['name'], dic['age'], dic['sex'], dic['class_code'], dic['class_name'], dic['school_code'], dic['school_name']))
             print("**********************************************************************")
 
         else:
@@ -71,8 +71,8 @@ class Student_Manager(object):
         self.__data = self.dbManager.get_student_by_code(code)
         obj = self.search_student(code)
         print("**************************************************************************")
-        print("学生代码:{0}    |学生名称:{1}    |学生年龄:{2}    |学生性别:{3}    |班级代码:{4}    |学校代码:{5}"
-                .format(obj.code, obj.name, obj.age, obj.sex, obj.class_code, obj.school_code))
+        print("学生代码:{0}    |学生名称:{1}    |学生年龄:{2}    |学生性别:{3}    |班级代码:{4}     |班级名称:{5}    |学校代码:{6}   |学校名称:{7}"
+                .format(obj.code, obj.name, obj.age, obj.sex, obj.class_code, obj.class_name, obj.school_code, obj.school_name))
         print("**************************************************************************")
 
     '根据学生代码删除指定的'
