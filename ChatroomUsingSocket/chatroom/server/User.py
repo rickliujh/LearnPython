@@ -35,3 +35,7 @@ class User(object):
 
     def getSockPeerName(self):
         return self.__sock.getpeername()
+
+    def closeSock(self):
+        self.__sock.shutdown(2)
+        self.__sock.close()

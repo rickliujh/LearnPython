@@ -38,6 +38,9 @@ class Chatroom(object):
             data = user.getMessage()
             if not data:
                 continue
+            elif "$exit" in data:
+                self.exitChatroom(user)
+                continue
             s.send((user, data))
         s.close()
             
@@ -59,4 +62,9 @@ class Chatroom(object):
             print('each user: '+user.getUserName()+" | %s:%s" % user.getSockPeerName())
             g.send(user)
         g.close()
+
+    def exitChatroom(self, user):
+        user.closeSock()
+        self.__userList.remove(user)
+        self.__userCount -= 1
             
